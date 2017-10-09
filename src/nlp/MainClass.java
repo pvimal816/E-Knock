@@ -3,12 +3,7 @@
  */
 package nlp;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Calendar;
 import java.util.Scanner;
-import java.util.logging.SimpleFormatter;
 
 public class MainClass {
 
@@ -18,20 +13,26 @@ public class MainClass {
         String sentence = s.nextLine();
         s.close();
 
-        PosTagger tagger = new PosTagger("c:\\users\\vimal patel\\nlp\\reminderModel.zip", "G:\\tools\\Opennlp models\\en-token.bin");
-        TokenizerUtils tokenizer = new TokenizerUtils("G:\\tools\\Opennlp models\\en-token.bin");
+        PosTagger tagger = new PosTagger("models\\reminderModel.zip", "models\\en-token.bin");
+        TokenizerUtils tokenizer = new TokenizerUtils("models\\en-token.bin");
         //NameFinder nameFinder = new NameFinder("G:\\tools\\Opennlp models\\en-ner-person.zip","G:\\tools\\Opennlp models\\en-token.bin");
 
         String[] tokens = tokenizer.tokenizeStringUsingLearnableTokenizer(sentence);
         String[] tags = tagger.tagifyString(tokens);
 
         System.out.print("tokens_tags : ");
-        for(int i=0; i<tokens.length; i++)
-            System.out.print(" "+ tokens[i] + "_" + tags[i]);
+        for (int i = 0; i < tokens.length; i++)
+            System.out.print(" " + tokens[i] + "_" + tags[i]);
 
-        String eventString = EventExtractor.exractEvent(tokens, tags).toString();
+        String eventString;
+        try {
+            eventString = EventExtractor.exractEvent(tokens, tags).toString();
+        } catch (NullPointerException e) {
+            eventString = "";
+            System.out.print("error in extracting events from message.");
+        }
         System.out.println("\n" + eventString);// + "Time : " + TimeParser.parseTime(eventString).toString());
-        String ss="";
+        String ss = "";
         /*try {
             ss = new SimpleDateFormat("dd,MMMMMMMMM").parse("1,October 2017").toString();
         } catch (ParseException e) {
