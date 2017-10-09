@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_nlp" default="compile.module.nlp">
+  <dirname property="module.nlp.basedir" file="${ant.file.module_nlp}"/>
+  
+  <property name="module.jdk.home.nlp" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.nlp" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.nlp" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.nlp" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="nlp.output.dir" value="${module.nlp.basedir}/bin"/>
+  <property name="nlp.testoutput.dir" value="${module.nlp.basedir}/bin"/>
+  
+  <path id="nlp.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="nlp.module.production.classpath">
+    <path refid="${module.jdk.classpath.nlp}"/>
+    <pathelement location="${basedir}/../../../../../apache/opennlp/lib/opennlp-tools-1.8.1.jar"/>
+    <pathelement location="${basedir}/../../../../../apache/opennlp/lib/opennlp-uima-1.8.1.jar"/>
+  </path>
+  
+  <path id="nlp.runtime.production.module.classpath">
+    <pathelement location="${nlp.output.dir}"/>
+    <pathelement location="${basedir}/../../../../../apache/opennlp/lib/opennlp-tools-1.8.1.jar"/>
+    <pathelement location="${basedir}/../../../../../apache/opennlp/lib/opennlp-uima-1.8.1.jar"/>
+  </path>
+  
+  <path id="nlp.module.classpath">
+    <pathelement location="${nlp.output.dir}"/>
+    <path refid="${module.jdk.classpath.nlp}"/>
+    <pathelement location="${basedir}/../../../../../apache/opennlp/lib/opennlp-tools-1.8.1.jar"/>
+    <pathelement location="${basedir}/../../../../../apache/opennlp/lib/opennlp-uima-1.8.1.jar"/>
+  </path>
+  
+  <path id="nlp.runtime.module.classpath">
+    <pathelement location="${nlp.output.dir}"/>
+    <pathelement location="${basedir}/../../../../../apache/opennlp/lib/opennlp-tools-1.8.1.jar"/>
+    <pathelement location="${basedir}/../../../../../apache/opennlp/lib/opennlp-uima-1.8.1.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.nlp">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.nlp">
+    <patternset refid="excluded.from.module.nlp"/>
+  </patternset>
+  
+  <path id="nlp.module.sourcepath">
+    <dirset dir="${module.nlp.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.nlp" depends="compile.module.nlp.production,compile.module.nlp.tests" description="Compile module nlp"/>
+  
+  <target name="compile.module.nlp.production" depends="register.custom.compilers" description="Compile module nlp; production classes">
+    <mkdir dir="${nlp.output.dir}"/>
+    <javac2 destdir="${nlp.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.nlp}/javac">
+      <compilerarg line="${compiler.args.nlp}"/>
+      <bootclasspath refid="nlp.module.bootclasspath"/>
+      <classpath refid="nlp.module.production.classpath"/>
+      <src refid="nlp.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.nlp"/>
+    </javac2>
+    
+    <copy todir="${nlp.output.dir}">
+      <fileset dir="${module.nlp.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.nlp.tests" depends="register.custom.compilers,compile.module.nlp.production" description="compile module nlp; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.nlp" description="cleanup module">
+    <delete dir="${nlp.output.dir}"/>
+    <delete dir="${nlp.testoutput.dir}"/>
+  </target>
+</project>
